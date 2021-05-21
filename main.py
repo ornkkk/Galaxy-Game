@@ -13,6 +13,8 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy import platform
 from kivy.lang import Builder
 import random
+import threading
+import multiprocessing
 
 Builder.load_file("menu.kv")
 
@@ -83,6 +85,7 @@ class MainWidget(RelativeLayout):
             self._keyboard.bind(on_key_up=self.on_keyboard_up)
 
         Clock.schedule_interval(self.update, 1.0/60.0)
+        self.sound_galaxy.seek(0)
         self.sound_galaxy.play()
     
     def init_audio(self):
@@ -96,9 +99,10 @@ class MainWidget(RelativeLayout):
         self.sound_music1.volume = 1
         self.sound_begin.volume = .25
         self.sound_galaxy.volume = .25
-        self.sound_gameover_voice.volume = .25
+        self.sound_gameover_voice.volume = .5
         self.sound_restart.volume = .25
-        self.sound_gameover_impact.volume = .6
+        self.sound_gameover_impact.volume = .25
+        self.sound_music1.loop = True
     
     def reset_game(self):
         self.current_offset_y = 0
@@ -313,24 +317,26 @@ class MainWidget(RelativeLayout):
             self.menu_button_title = "RESTART"
             self.menu_widget.opacity = 1
             self.sound_music1.stop()
-            self.sound_restart.stop()
+            self.sound_gameover_impact.seek(0)
             self.sound_gameover_impact.play()
-            Clock.schedule_once(self.play_game_over_voice_sound, 2)
+            Clock.schedule_once(self.play_game_over_voice_sound, 0.5)
             
             #print("Game Over!!!")
     
     def play_game_over_voice_sound(self, dt):
         if self.state_game_over:
-            self.sound_gameover_impact.stop()
+            self.sound_gameover_voice.seek(0)
             self.sound_gameover_voice.play()
-    
+        
     def on_menu_button_pressed(self):
         if self.state_game_over:
-            print(self.sound_restart.state)
+            self.sound_restart.seek(0)
             self.sound_restart.play()
-            print(self.sound_restart.state)
         else:
+            self.sound_begin.seek(0)
             self.sound_begin.play()
+
+        self.sound_music1.seek(0)
         self.sound_music1.play()
         self.reset_game()
         self.state_game_has_started = True
