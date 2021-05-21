@@ -1,6 +1,8 @@
+'''
 from kivy.config import Config
 Config.set('graphics', 'width', '1024')
 Config.set('graphics', 'height', '768')
+'''
 
 from kivy.app import App
 from kivy.uix.widget import Widget
@@ -13,8 +15,6 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy import platform
 from kivy.lang import Builder
 import random
-import threading
-import multiprocessing
 
 Builder.load_file("menu.kv")
 
@@ -26,7 +26,7 @@ class MainWidget(RelativeLayout):
     perspective_point_x = NumericProperty(0)
     perspective_point_y = NumericProperty(0)
 
-    V_NB_LINES = 8
+    V_NB_LINES = 7
     V_LINES_SPACING = .4 #percentage in screen width
     vertical_lines = []
 
@@ -36,9 +36,9 @@ class MainWidget(RelativeLayout):
 
     current_offset_y = 0
     current_y_loop = 0
-    SPEED = .8
+    SPEED = 1
 
-    SPEED_X = 3
+    SPEED_X = 3.1
     current_speed_x = 0
     current_offset_x = 0
 
@@ -84,7 +84,7 @@ class MainWidget(RelativeLayout):
             self._keyboard.bind(on_key_down=self.on_keyboard_down)
             self._keyboard.bind(on_key_up=self.on_keyboard_up)
 
-        Clock.schedule_interval(self.update, 1.0/60.0)
+        Clock.schedule_interval(self.update, 1.0/30.0)
         self.sound_galaxy.seek(0)
         self.sound_galaxy.play()
     
@@ -330,6 +330,7 @@ class MainWidget(RelativeLayout):
         
     def on_menu_button_pressed(self):
         if self.state_game_over:
+            self.sound_gameover_voice.stop()
             self.sound_restart.seek(0)
             self.sound_restart.play()
         else:
